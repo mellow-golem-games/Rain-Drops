@@ -1,0 +1,19 @@
+{
+  "name": "com.totalwebconnections.raindrops",
+  "version": "0.0.1",
+  "displayName": "Rain Drops",
+  "cordova": {
+    "platforms": [
+      "ios"
+    ],
+    "plugins": {
+      "cordova-plugin-whitelist": {}
+    }
+  },
+  "dependencies": {
+    "cordova-ios": "^4.1.1"
+  },
+  "devDependencies": {
+    "cordova-plugin-whitelist": "1"
+  }
+}

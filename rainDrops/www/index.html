@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rain Drops</title>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
+
+
+    <style type="text/css">
+        body {
+            margin: 0;
+            background-color: black;
+        }
+        canvas
+        {
+            margin: 0 auto;
+        }
+
+        #splash_wrap
+        {
+            margin: 0 auto;
+            width:375px;
+            height: 667px;
+            background-color: #90bfff;
+            transition: all 2s;
+            -webkit-transition: all 2s;
+        }
+    </style>
+</head>
+<body>
+
+
+
+
+
+
+<script type="text/javascript">
+    // document.addEventListener("deviceready", onDeviceReady, false);
+
+
+    var player;
+    var platforms;
+    var cursors;
+    var stars;
+    var score = 0;
+    var scoreText;
+
+    var game = new Phaser.Game(375, 667, Phaser.CANVAS, '');
+
+
+    // select the right Ad Id according to platform
+     admobid = {};
+
+
+document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady()
+    {
+
+        if( /(android)/i.test(navigator.userAgent) ) {
+            admobid = { // for Android
+                banner: '',
+                interstitial: ''
+            };
+            } else if(/(ipod|iphone|ipad)/i.test(navigator.userAgent)) {
+            admobid = { // for iOS
+                banner: 'ca-app-pub-3205281524644076/9589055543'
+            };
+            } else {
+            admobid = { // for Windows Phone
+                banner: '',
+                interstitial: ''
+            };
+        }
+
+
+
+
+
+
+    }
+
+var Rain = {};
+
+
+
+
+
+
+Rain.Over = function(game){};
+Rain.Over.prototype = {
+    create: function(){
+    // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    // this.scale.pageAlignHorizontally = true;
+    // this.scale.pageAlignVertically = true;
+    // this.scale.setScreenSize(true);
+    // AdMob.showBannerAtXY(100, 100);
+      AdMob.createBanner( {
+       adId: admobid.banner,
+       position: AdMob.AD_POSITION.BOTTOM_CENTER,
+       overlap: true,
+       autoShow : true
+     });
+
+    //AdMob.showBanner(8).overlap(true);
+
+    this.completionSprite = game.add.graphics( 0, 0 );
+    this.completionSprite.beginFill(0x86baff, 1);
+    this.completionSprite.bounds = new PIXI.Rectangle(0, 0, game.width, game.height);
+    this.completionSprite.drawRect(0, 0, 375, 667);
+    var background = this.game.add.image(0, 0, 'over').anchor.set(0.0);
+    this.startButton = this.game.add.button(this.game.width/2, 380, 'playAgain', this.startClick, this);
+    this.startButton.anchor.setTo(0.5,0.5);
+    this.startButton.anchor.setTo(0.5,0.5);
+    this.startButton.width = 260;
+    this.startButton.height = 82;
+    scoreText = game.add.text(210, 271, score, { fontSize: '16px', fill: '#ffffff' });
+    hiscoreText = game.add.text(210, 296, score, { fontSize: '32px', fill: '#ffffff' });
+    if(localStorage.score == undefined){
+        localStorage.score = 0;
+    }
+    if( score >  parseInt(localStorage.score))
+    {
+    localStorage.score = score - 1;
+    }
+    scoreText.text = score - 1;
+    hiscoreText.text = localStorage.score;
+
+
+    },
+
+    startClick: function() {
+    // start button click handler
+    // start the 'play' state
+    AdMob.removeBanner();
+    this.game.state.start('Boot');
+    }
+}
+
+
+Rain.Splash = function(game){};
+Rain.Splash.prototype = {
+    preload: function(){
+        game.load.image('play', 'assets/play.png');
+        game.load.image('playClicked', 'assets/playClicked.png');
+        game.load.image('playAgain', 'assets/playAgain.png');
+        game.load.image('title', 'assets/title.jpg');
+        game.load.image('splash', 'assets/splash.jpg');
+        game.load.image('background', 'assets/background.jpg');
+        game.load.image('over', 'assets/over.jpg');
+        game.load.image('overClicked', 'assets/overClicked.jpg');
+        game.load.audio('rain', 'assets/rain.mp3');
+        music = game.add.audio('rain');
+        music.loop=true;
+        this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+   // this.scale.pageAlignHorizontally = true;
+   // this.scale.pageAlignVertically = true;
+   // this.scale.setScreenSize(true);
+
+
+
+
+
+
+    },
+    create: function(){
+          music.play();
+
+
+    // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    // this.scale.pageAlignHorizontally = true;
+    // this.scale.pageAlignVertically = true;
+    // this.scale.setScreenSize(true);
+
+    this.completionSprite = game.add.graphics( 0, 0 );
+    var splash = game.add.sprite(0, 0, 'splash');
+    splash.scale.setTo(.4, .4);
+    this.completionSprite.beginFill(0x86baff, 1);
+    this.completionSprite.bounds = new PIXI.Rectangle(0, 0, game.width, game.height);
+    this.completionSprite.drawRect(0, 0, game.width, game.height);
+    var background = this.game.add.image(0, 0, 'background').anchor.set(0.0);
+    var start = this.startButton = this.game.add.button(this.game.width/2, 360, 'play',  this.startClick, this);
+    this.startButton.anchor.setTo(0.5,0.5);
+    start.width = 300;
+    start.height = 102;
+    score = 0;
+
+    },
+
+    startClick: function() {
+    // start button click handler
+    // start the 'play' state
+    AdMob.removeBanner();
+    this.game.state.start('Boot');
+    }
+}
+
+Rain.Boot = function(game){};
+Rain.Boot.prototype = {
+    preload: function()
+    {
+        // preload the loading indicator first before anything else
+            game.load.image('sky', 'assets/bg.jpg');
+            game.load.image('ground', 'assets/platform.png');
+            game.load.image('star', 'assets/rain_drop.png');
+            game.load.spritesheet('dude', 'assets/character.png', 45, 69);
+            bgpos = 0;
+    },
+    create: function(){
+        AdMob.hideBanner();
+         //  A simple background for our game
+         //citybg = game.add.sprite(0, -350, 'sky');
+    sky = game.add.tileSprite(0, -350, 375, game.cache.getImage('sky').height, 'sky');
+        // set scale options
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    //  The platforms group contains the ground and the 2 ledges we can jump on
+    platforms = game.add.group();
+
+    //  We will enable physics for any object that is created in this group
+    platforms.enableBody = true;
+
+    // Here we create the ground.
+    var ground = platforms.create(0, game.world.height - 64, 'ground');
+
+    //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
+    // ground.scale.setTo(2, 2);
+
+    //  This stops it from falling away when you jump on it
+    ground.body.immovable = true;
+
+    // The player and its settings
+    player = game.add.sprite(32, game.world.height - 150, 'dude');
+
+    //  We need to enable physics on the player
+    game.physics.arcade.enable(player);
+
+    //  Player physics properties. Give the little guy a slight bounce.
+    player.body.bounce.y = 0.2;
+    player.body.gravity.y = 300;
+    player.body.collideWorldBounds = true;
+
+    //  Our two animations, walking left and right.
+    player.animations.add('left', [3, 4, 5], 10, true);
+    player.animations.add('right', [0, 1, 2], 10, true);
+
+    //  Finally some stars to collect
+    stars = game.add.group();
+
+    //  We will enable physics for any star that is created in this group
+    stars.enableBody = true;
+
+   add_stars();
+   add_stars();
+   this.lastMoved = null;
+    gameState = 'alive';
+    score = 0;
+
+    //  The score
+    scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+
+    //  Our controls.
+    cursors = game.input.keyboard.createCursorKeys();
+    },
+    update: function(){
+
+            //  Collide the player and the stars with the platforms
+     sky.tilePosition.x -= 1;
+
+    game.physics.arcade.collide(player, platforms);
+    game.physics.arcade.overlap(player, stars, endGame, null, this);
+
+    //  Reset the players velocity (movement)
+    player.body.velocity.x = 0;
+
+
+    if(this.input.pointer1.x < this.game.width/2 && this.input.pointer1.isDown && gameState != "dead")
+            {
+                //  Move to the left
+        player.body.velocity.x = -150;
+
+        player.animations.play('left');
+            }
+else if(this.input.pointer1.x > this.game.width/2 && this.input.pointer1.isDown && gameState != "dead")
+            {
+                 //  Move to the right
+        player.body.velocity.x = 150;
+
+        player.animations.play('right');
+            }
+
+
+
+    else if (cursors.left.isDown && gameState != "dead")
+    {
+        //  Move to the left
+        player.body.velocity.x = -150;
+
+        player.animations.play('left');
+        this.lastMoved = 'left';
+    }
+    else if (cursors.right.isDown && gameState != "dead")
+    {
+        //  Move to the right
+        player.body.velocity.x = 150;
+
+        player.animations.play('right');
+        this.lastMoved = 'right';
+    }
+    else
+    {
+        //  Stand still
+        player.animations.stop();
+
+        // player.frame = 4;
+    }
+
+    if(gameState != "dead"){
+        scoreText.text = 'Score: ' + score;
+        score++;
+    }
+    else {
+        console.log(this.lastMoved)
+        if(this.lastMoved == "right")
+        {
+            player.frame =  7;
+        }
+        else {
+            player.frame =  6;
+        }
+    }
+
+    if(score % 10 == 0)
+    {
+        add_stars();
+    }
+
+
+    }
+
+};
+
+function endGame()
+{
+     gameState = 'dead';
+    player.animations.stop();
+
+    setTimeout(function(){ game.state.start('Over');},1000);
+
+}
+
+
+function add_stars()
+{
+
+        var star = stars.create(Math.floor((Math.random()*game.world.width)), 0, 'star');
+
+        star.body.gravity.y = Math.floor((Math.random()*100) +1);
+}
+
+
+function game_over()
+{
+    if( score >  parseInt(localStorage.score))
+    {
+    localStorage.score = score;
+    }
+    console.log(localStorage.score);
+
+}
+
+
+(function(){
+    start_game(game);})();
+
+
+
+function start_game()
+{
+
+    // add game states
+    game.state.add('Boot', Rain.Boot);
+    game.state.add('Preloader', Rain.Preloader);
+    game.state.add('MainMenu', Rain.MainMenu);
+    game.state.add('Game', Rain.Game);
+    game.state.add('Over', Rain.Over);
+    game.state.add('Splash', Rain.Splash);
+    // start the Boot state
+    game.state.start('Splash');
+// var game = new Phaser.Game(canvas_width, canvas_height, Phaser.AUTO, '', { preload: preload, create: create, update: update, game_over: game_over });
+
+// function preload() {
+
+    // game.load.image('sky', 'assets/citybg.png');
+    // game.load.image('ground', 'assets/platform.png');
+    // game.load.image('star', 'assets/rain_drop.png');
+    // game.load.spritesheet('dude', 'assets/character.png', 45, 70);
+    // game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+}
+
+
+</script>
+
+</body>
+</html>
